@@ -1,0 +1,49 @@
+{
+  "name": "attila-srv",
+  "version": "1.0.0",
+  "description": "Home Manager",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "Attila-srv"
+  },
+  "keywords": [
+    "Attila",
+    "home",
+    "manager"
+  ],
+  "author": "Bertrand PETIT",
+  "engines": {
+    "node": "12.18.3"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "app-root-path": "^3.0.0",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "dotenv": "^8.2.0",
+    "dotenv-parse-variables": "^0.3.1",
+    "express": "^4.17.1",
+    "helmet": "^4.0.0",
+    "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.19",
+    "mongoose": "^5.9.27",
+    "nodemon": "^2.0.4",
+    "path": "^0.12.7",
+    "verror": "^1.10.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.6.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-config-prettier": "^6.9.0",
+    "eslint-plugin-import": "^2.19.1",
+    "eslint-plugin-prettier": "^3.1.2",
+    "grunt": "^1.0.4",
+    "prettier": "^1.19.1"
+  }
+}
