@@ -5,7 +5,6 @@ const {
   } = require('../errors');
 
 const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-const PASSWORD_REGEX = /^(?=.*\d).{4,15}$/;
 
 /**
  * Anything controller.
@@ -29,27 +28,6 @@ module.exports.register = (req, res) => {
           });
     }
 
-    // Check username length
-    if (req.body.username.length >= 12 || req.body.username.length <= 3) {
-        return res.status(400).json({
-            'error': 'wrong username (must be length 3 - 12)'
-        });
-    }
-
-    // Validate email
-    if (!EMAIL_REGEX.test(req.body.email)) {
-        return res.status(400).json({
-            'error': 'email is not valid'
-        });
-    }
-    
-    // validate password
-    if (!PASSWORD_REGEX.test(req.body.password)) {
-        return res.status(400).json({
-            'error': 'password invalid (must length 4-15 and include 1 number)'
-        });
-    }
-
     User.find({
         $or: [{email: req.body.email}, { username: req.body.username }]
     }, (err, result) => {
@@ -65,7 +43,8 @@ module.exports.register = (req, res) => {
                     if (err) {
                         return res.status(500).json({
                             message: 'cannot add user',
-                            error: err
+                            error: err,
+                            code: 'cant_add_user'
                         });
                     }
                     res.status(201).json(user);
@@ -73,7 +52,8 @@ module.exports.register = (req, res) => {
             });
         } else {
             return res.status(409).json({
-                message: `email ${req.body.email} or user ${req.body.username} already exist`
+                message: `email ${req.body.email} or user ${req.body.username} already exist`,
+                code: 'email_username_already_used'
             });
         }
     });

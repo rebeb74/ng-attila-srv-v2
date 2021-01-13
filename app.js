@@ -38,6 +38,7 @@ app.use((req, res) => {
 // Mongoose Configuration
 mongoose.set('useUnifiedTopology', true);
 mongoose.set('useFindAndModify', false);
+// mongoose.set('useCreateIndex', true);
 mongoose.connect(db, { useNewUrlParser: true });
 connection.on('error', (err) => {
     console.error(`Connection to MongoDB error: ${err.message}`);

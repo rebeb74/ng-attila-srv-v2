@@ -82,7 +82,8 @@ module.exports.login = async (req, res, next) => {
       var resBcrypt = await bcrypt.compare(password, user[0].password);
       if (!resBcrypt) {
         throw new BadCredentialsError({
-          message: 'Username or password is incorrect'
+          message: 'username_password_invalid',
+          code: 'username_password_invalid'
         });
       } else {
         // Generate token
@@ -104,7 +105,8 @@ module.exports.login = async (req, res, next) => {
 
     } else {
       throw new BadCredentialsError({
-        message: 'Username or password is incorrect'
+        message: 'username_password_invalid',
+        code: 'username_password_invalid'
       });
     }
 

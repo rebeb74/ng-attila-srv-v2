@@ -37,6 +37,7 @@ module.exports.getNotifications = (req, res) => {
     })
     .catch(err => res.status(500).json({
       message: 'no notifications found :(',
+      code: 'notifications_not_found',
       error: err
     }));
 };
@@ -49,14 +50,16 @@ module.exports.getNotificationById = (req, res) => {
         return res.status(200).json(notification);
       } else {
         return res.status(403).json({
-          message: 'unauthorized access'
+          message: 'unauthorized access',
+          code: 'unauthorized_access'
         });
       }
 
     })
     .catch(err => res.status(404).json({
       message: `notification not found`,
-      error: err
+      error: err,
+      code: 'notification_not_found'
     }));
 };
 
@@ -78,13 +81,15 @@ module.exports.updateNotificationById = (req, res) => {
           });
       } else {
         return res.status(403).json({
-          message: 'unauthorized access'
+          message: 'unauthorized access',
+          code: 'unauthorized_access'
         });
       }
     })
     .catch(err => res.status(404).json({
       message: `notification with id ${id} not found`,
-      error: err
+      error: err,
+      code: 'notification_not_found'
     }));
 };
 
@@ -103,12 +108,14 @@ module.exports.deleteNotificationById = (req, res) => {
         });
       } else {
         return res.status(403).json({
-          message: 'unauthorized access'
+          message: 'unauthorized access',
+          code: 'unauthorized_access'
         });
       }
     })
     .catch(err => res.status(404).json({
       message: `notification with id ${id} not found`,
-      error: err
+      error: err,
+      code: 'notification_not_found'
     }));
 };

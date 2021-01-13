@@ -24,6 +24,7 @@
     "app-root-path": "^3.0.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
+    "core-util-is": "^1.0.2",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "dotenv": "^8.2.0",
@@ -33,8 +34,10 @@
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.19",
     "mongoose": "^5.9.27",
+    "nodemailer": "^6.4.17",
     "nodemon": "^2.0.4",
     "path": "^0.12.7",
+    "uuid": "^8.3.2",
     "verror": "^1.10.0"
   },
   "devDependencies": {

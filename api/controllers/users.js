@@ -21,22 +21,33 @@ const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"
  * @param {Object} res - Express response object.
  */
 module.exports.getUsers = (req, res) => {
-  // if (req.user.isAdmin) {
   User.find()
     .sort({
       'createdOn': -1
     })
     .exec()
-    .then(users => res.status(200).json(users))
+    .then(users => {
+      const parsedUsers = [];
+      users.forEach(user => {
+        parsedUsers.push({
+          _id: user._id,
+          email: user.email,
+          username: user.username,
+          lang: user.lang,
+          birthdate: user.birthdate,
+          createdOn: user.createdOn,
+          updatedOn: user.updatedOn,
+          isShared: user.isShared,
+          share: user.share
+        });
+      });
+      res.status(200).json(parsedUsers)
+    })
     .catch(err => res.status(500).json({
       message: 'users not found :(',
-      error: err
+      error: err,
+      code: 'user_not_found'
     }));
-  // } else {
-  //   return res.status(403).json({
-  //     message: 'unauthorized access'
-  //   });
-  // }
 };
 
 
@@ -59,7 +70,8 @@ module.exports.getUserById = (req, res) => {
     })
     .catch(err => res.status(500).json({
       message: `user with id ${id} not found`,
-      error: err
+      error: err,
+      code: 'user_not_found'
     }));
 };
 
@@ -84,7 +96,8 @@ module.exports.getUserByUsername = (req, res) => {
     })
     .catch(err => res.status(500).json({
       message: `user with username ${username} not found`,
-      error: err
+      error: err,
+      code: 'user_not_found'
     }));
 };
 
@@ -100,20 +113,6 @@ module.exports.updateUserById = async (req, res) => {
     });
   }
 
-  // Check username length
-  if (req.body.username.length >= 12 || req.body.username.length <= 3) {
-    return res.status(400).json({
-      'error': 'wrong username (must be length 3 - 12)'
-    });
-  }
-
-  // Validate email
-  if (!EMAIL_REGEX.test(req.body.email)) {
-    return res.status(400).json({
-      'error': 'email is not valid'
-    });
-  }
-
   let checkUsername = false;
   let checkEmail = false;
 
@@ -125,7 +124,8 @@ module.exports.updateUserById = async (req, res) => {
         checkUsername = true;
       } else {
         return res.status(403).json({
-          message: 'unauthorized access'
+          message: 'unauthorized access',
+          code: 'unauthorized_access'
         });
       }
     } else {
@@ -141,7 +141,8 @@ module.exports.updateUserById = async (req, res) => {
         checkEmail = true;
       } else {
         return res.status(403).json({
-          message: 'unauthorized access'
+          message: 'unauthorized access',
+          code: 'unauthorized_access'
         });
       }
     } else {
@@ -158,7 +159,8 @@ module.exports.updateUserById = async (req, res) => {
       (err, user) => {
         if (err) {
           return res.status(500).json({
-            message: 'user not found'
+            message: 'user not found',
+            code: 'user_not_found'
           });
         }
         res.status(202).json({
@@ -167,7 +169,8 @@ module.exports.updateUserById = async (req, res) => {
       });
   } else {
     return res.status(409).json({
-      message: `email or user already exist`
+      message: `email or user already exist`,
+      code: 'email_username_already_used'
     });
   }
 
@@ -227,7 +230,8 @@ module.exports.deleteUserById = (req, res) => {
     });
   } else {
     return res.status(403).json({
-      message: 'unauthorized access'
+      message: 'unauthorized access',
+      code: 'unauthorized_access'
     });
   }
 };

@@ -64,7 +64,8 @@ module.exports = async (req, res, next) => {
     const user = await User.findById(userId).exec();
     if (user == '') {
       throw new BadCredentialsError({
-        message: `User ${userId} does not exists`
+        message: `User ${userId} does not exists`,
+        code: 'user_not_found'
       });
     }
     req.user = user;
