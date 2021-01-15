@@ -15,7 +15,6 @@ const notification = require('../models/notification');
  */
 module.exports.createNotification = (req, res) => {
   const notification = new Notification(req.body);
-  notification.notificationUserId = req.user._id;
   notification.save((err, notification) => {
     if (err) {
       return res.status(500).json(err);

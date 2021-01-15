@@ -10,22 +10,17 @@ const userSchema = new mongoose.Schema({
     birthdate: String,
     lang: String,
     share: [{
-        id: String,
+        userId: String,
         email: String,
         username: String,
     }],
-    isShared: [{
-        id: String,
-        email: String,
-        username: String
-    }],
     createdOn: {
         type: Date,
-        default: Date.now
+        default: Date.now()
     },
     updatedOn: {
         type: Date,
-        default: Date.now
+        default: Date.now()
     }
 });
 

@@ -15,12 +15,6 @@ router.get(
     controller.getUserById
 );
 
-router.get(
-    '/user/username/:username',
-    auth,
-    controller.getUserByUsername
-);
-
 router.put(
     '/user/:id',
     auth,
