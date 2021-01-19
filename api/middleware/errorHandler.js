@@ -16,12 +16,11 @@ const { InternalServerError } = require('../errors');
  * @param {Function} next - Express next middleware function.
  */
 module.exports = (err, req, res, next) => {
-  console.log('pass', err);
   if (!err.isHTTPError) {
     err = new InternalServerError({ cause: err });
   }
 
-  console.log(err, { stack: err.fullStack() });
+  // console.log(err, { stack: err.fullStack() });
 
   if (res.headersSent) {
     return next(err);

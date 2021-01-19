@@ -2,7 +2,6 @@
 // Imports
 const express = require('express');
 const bodyParser = require('body-parser');
-const api = require('./api/routes');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const { server: config } = require('./api/config');
@@ -13,6 +12,17 @@ require('dotenv').config();
 
 // Instantiate server
 const app = express();
+const http = require('http');
+const server = http.createServer(app);
+
+const socketIO = require('socket.io');
+const io = socketIO(server, {
+    cors: {
+        origin: "http://localhost:4200",
+        methods: ["GET", "POST"]
+      },
+    // allowEIO3: true // false by default
+  });
 
 // Init Mongoose
 const connection = mongoose.connection;
@@ -26,7 +36,24 @@ app.use(helmet());
 // Cors
 app.use(cors({credentials: true, origin: '*'})); 
 
+// Socket.io configuration
+io.of('/notification').on('connection', socket => {
+    console.log('[Notification] - New client connected');
+    
+});
+io.of('/user').on('connection', socket => {
+    console.log('[User] - New client connected');
+    
+});
+
 // API Configuration
+const userRouter = require('./api/routes/user.routes')(io);
+app.use('/api', userRouter);
+
+const notificationRouter = require('./api/routes/notification.routes')(io);
+app.use('/api', notificationRouter);
+
+const api = require('./api/routes');
 app.use('/api', api);
 app.use(errorHandler);
 app.use((req, res) => {
@@ -51,11 +78,8 @@ connection.once('open', () => {
     console.log('Connected to MongoDB');
     console.log('host', host);
     
-    app.listen(serverPort, () => {
+    server.listen(serverPort, () => {
         console.log(`App is running ! Go to http://${host}:${port}`);
     });
 
 });
-
-
-

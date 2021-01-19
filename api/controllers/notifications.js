@@ -1,6 +1,4 @@
 const Notification = require('../models/notification');
-const mongoose = require('mongoose');
-const notification = require('../models/notification');
 
 /**
  * Anything controller.
@@ -13,19 +11,22 @@ const notification = require('../models/notification');
  * @param {Object} req - Express request object.
  * @param {Object} res - Express response object.
  */
-module.exports.createNotification = (req, res) => {
-  const notification = new Notification(req.body);
-  notification.save((err, notification) => {
-    if (err) {
-      return res.status(500).json(err);
-    }
-    res.status(201).json(notification);
-  });
+module.exports.createNotification = async (req, res) => {
+  try {
+
+    const notification = new Notification(req.body);
+    await notification.save((err, notification) => {
+      res.status(201).json(notification);
+    });
+
+  } catch (error) {
+    return res.status(500).json(err);
+  }
 };
 
 module.exports.getNotifications = (req, res) => {
   Notification.find({
-    notificationUserId: req.user._id
+      notificationUserId: req.user._id
     })
     .sort({
       'createdOn': -1

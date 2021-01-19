@@ -129,7 +129,6 @@ module.exports.refreshToken = async (req, res, next) => {
     const {
       token
     } = req.body;
-    console.log('refresh token : ', token);
     if (!token) {
       throw new MissingRequiredParameterError({
         info: {
@@ -185,7 +184,6 @@ module.exports.logout = async (req, res, next) => {
         }
       });
     }
-    console.log('refreshToken', refreshToken);
     const oldRefreshToken = await RefreshToken.find({
       token: refreshToken
     }).exec();

@@ -37,8 +37,7 @@ module.exports.getUsers = (req, res) => {
           birthdate: user.birthdate,
           createdOn: user.createdOn,
           updatedOn: user.updatedOn,
-          isShared: user.isShared,
-          share: user.share
+          friend: user.friend
         });
       });
       res.status(200).json(parsedUsers)
@@ -62,8 +61,7 @@ module.exports.getUserById = (req, res) => {
         birthdate: user[0].birthdate,
         createdOn: user[0].createdOn,
         updatedOn: user[0].updatedOn,
-        isShared: user[0].isShared,
-        share: user[0].share
+        friend: user[0].friend
       });
     })
     .catch(err => res.status(500).json({
@@ -74,6 +72,7 @@ module.exports.getUserById = (req, res) => {
 };
 
 module.exports.updateUserById = (req, res) => {
+  console.log('PASS OLD')
   const id = req.params.id;
 
   if (req.body.email == null || req.body.username == null) {
@@ -96,7 +95,7 @@ module.exports.updateUserById = (req, res) => {
             User.findByIdAndUpdate(id, {
                 username: req.body.username,
                 email: req.body.email,
-                share: req.body.share,
+                friend: req.body.friend,
                 birthdate: req.body.birthdate,
                 lang: req.body.lang,
                 updatedOn: Date.now()
@@ -133,47 +132,6 @@ module.exports.updateUserById = (req, res) => {
     });
   }
 
-  // let isSharedAdded = false;
-
-  // if (req.body.share != []) {
-  //   req.body.share.forEach(element => {
-  //     User.findById(element.id).exec()
-  //       .then((userShare) => {
-  //         if (userShare.isShared != []) {
-  //           let isAlreadyAdded = false;
-  //           userShare.isShared.forEach((isSharedUser => {
-  //             if (isSharedUser.id == req.body._id) {
-  //               isAlreadyAdded = true;
-  //             }
-  //           }));
-  //           if (!isAlreadyAdded) {
-  //             userShare.isShared.push({
-  //               id: req.user._id,
-  //               email: req.user.email,
-  //               username: req.user.username
-  //             });
-  //             User.findByIdAndUpdate(userShare._id, userShare)
-  //               .exec()
-  //               .then((success) => console.log(success))
-  //               .catch((error) => console.log(error))
-  //             isSharedAdded = true;
-  //           }
-  //         } else {
-  //           userShare.isShared.push({
-  //             id: req.user._id,
-  //             email: req.user.email,
-  //             username: req.user.username
-  //           });
-  //           User.findByIdAndUpdate(userShare._id, userShare)
-  //             .exec()
-  //             .then((success) => console.log(success))
-  //             .catch((error) => console.log(error))
-  //           isSharedAdded = true;
-  //         }
-  //       })
-  //       .catch((error) => console.log(error));
-  //   });
-  // }
 };
 
 module.exports.deleteUserById = (req, res) => {
