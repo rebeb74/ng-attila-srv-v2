@@ -1,12 +1,21 @@
 /* eslint-disable no-console */
 // Imports
+const Socket = require('./api/models/socketUsers');
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const { server: config } = require('./api/config');
-const { host, port, db } = config;
-const { errorHandler } = require('./api/middleware');
+const {
+    server: config
+} = require('./api/config');
+const {
+    host,
+    port,
+    db
+} = config;
+const {
+    errorHandler
+} = require('./api/middleware');
 const helmet = require('helmet');
 require('dotenv').config();
 
@@ -20,30 +29,70 @@ const io = socketIO(server, {
     cors: {
         origin: "http://localhost:4200",
         methods: ["GET", "POST"]
-      },
-    // allowEIO3: true // false by default
-  });
+    },
+});
 
 // Init Mongoose
 const connection = mongoose.connection;
 
 // Body Parser configuration
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({
+    extended: false
+}));
 
 // helmet
 app.use(helmet());
 // Cors
-app.use(cors({credentials: true, origin: '*'})); 
+app.use(cors({
+    credentials: true,
+    origin: 'http://localhost:4200'
+}));
+
+// Mongoose Configuration
+mongoose.set('useUnifiedTopology', true);
+mongoose.set('useFindAndModify', false);
+// mongoose.set('useCreateIndex', true);
+mongoose.connect(db, {
+    useNewUrlParser: true
+});
 
 // Socket.io configuration
 io.of('/notification').on('connection', socket => {
-    console.log('[Notification] - New client connected');
-    
+    console.log(`[Notification] - New client connected : SocketID ${socket.id}, userId : ${socket.handshake.query.userId}`);
+    Socket.findOneAndDelete({user: socket.handshake.query.userId, namespace: socket.nsp.name}).exec().then(
+        () => {
+            const newSocketUser = new Socket({
+                _id: socket.id,
+                user: socket.handshake.query.userId,
+                namespace: socket.nsp.name,
+                createdOn: socket.time
+            });
+            newSocketUser.save()
+            socket.on("disconnect", () => {
+                console.log(`[Notification] - New client disconnected : SocketID ${socket.id}, userId : ${socket.handshake.query.userId}`);
+                Socket.findByIdAndDelete(socket.id).exec()
+            });
+        }
+    );
 });
 io.of('/user').on('connection', socket => {
-    console.log('[User] - New client connected');
-    
+    console.log(`[User] - New client connected : SocketID ${socket.id}, userId : ${socket.handshake.query.userId}`);
+    Socket.findOneAndDelete({user: socket.handshake.query.userId, namespace: socket.nsp.name}).exec().then(
+        () => {
+            const newSocketUser = new Socket({
+                _id: socket.id,
+                user: socket.handshake.query.userId,
+                namespace: socket.nsp.name,
+                createdOn: socket.time
+            });
+            newSocketUser.save()
+            socket.on("disconnect", () => {
+                console.log(`[User] - New client disconnected : SocketID ${socket.id}, userId : ${socket.handshake.query.userId}`);
+                Socket.findByIdAndDelete(socket.id).exec()
+            });
+        }
+    )
 });
 
 // API Configuration
@@ -59,14 +108,12 @@ app.use(errorHandler);
 app.use((req, res) => {
     const err = new Error('404 - Not Found !!!!!');
     err.status = 404;
-    res.json({ msg : '404 - Not Found !!!!!', err: err});
+    res.json({
+        msg: '404 - Not Found !!!!!',
+        err: err
+    });
 });
 
-// Mongoose Configuration
-mongoose.set('useUnifiedTopology', true);
-mongoose.set('useFindAndModify', false);
-// mongoose.set('useCreateIndex', true);
-mongoose.connect(db, { useNewUrlParser: true });
 connection.on('error', (err) => {
     console.error(`Connection to MongoDB error: ${err.message}`);
 });
@@ -76,8 +123,7 @@ const serverPort = process.env.PORT || port;
 // Launch server
 connection.once('open', () => {
     console.log('Connected to MongoDB');
-    console.log('host', host);
-    
+
     server.listen(serverPort, () => {
         console.log(`App is running ! Go to http://${host}:${port}`);
     });

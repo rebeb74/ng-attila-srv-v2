@@ -40,7 +40,7 @@ module.exports.reset = async (req, res) => {
                 sendEmail({
                     to: user.email,
                     subject: 'Réinitialisation de mot de passe',
-                    text: `Bonjour ${user.username}, voici votre lien pour rèinitialiser votre mot de passe: ${resetLink}. 
+                    text: `Bonjour ${user.username}, voici votre lien pour réinitialiser votre mot de passe: ${resetLink}. 
 Si vous n'êtes pas à l'origine de cette demande, ignorez-la.`
                 })
             } else if (user.lang == 'en') {

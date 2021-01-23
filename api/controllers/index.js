@@ -6,6 +6,7 @@ const users = require('./users');
 const password = require('./password');
 const lists = require('./lists');
 const notifications = require('./notifications');
+const contact = require('./contact');
 
 /**
  * Controllers.
@@ -20,5 +21,6 @@ module.exports = {
   users,
   password,
   notifications,
-  lists
+  lists,
+  contact
 };

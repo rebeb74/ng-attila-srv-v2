@@ -1,8 +1,10 @@
 const express = require('express');
 const User = require('../models/user');
+const Socket = require('../models/socketUsers');
 const {
     auth
 } = require('../middleware');
+const _ = require('lodash');
 
 module.exports = function (io) {
     const userRouter = express.Router();
@@ -57,50 +59,6 @@ module.exports = function (io) {
                 code: 'user_not_found'
             }));
     });
-    //////////////////////////////////////////////////////////
-    //     let isSharedAdded = false;
-
-    //     if (req.body.share != []) {
-    //         req.body.share.forEach(element => {
-    //             User.findById(element.id).exec()
-    //                 .then((userShare) => {
-    //                     if (userShare.isShared != []) {
-    //                         let isAlreadyAdded = false;
-    //                         userShare.isShared.forEach((isSharedUser => {
-    //                             if (isSharedUser.id == req.body._id) {
-    //                                 isAlreadyAdded = true;
-    //                             }
-    //                         }));
-    //                         if (!isAlreadyAdded) {
-    //                             userShare.isShared.push({
-    //                                 id: req.user._id,
-    //                                 email: req.user.email,
-    //                                 username: req.user.username
-    //                             });
-    //                             User.findByIdAndUpdate(userShare._id, userShare)
-    //                                 .exec()
-    //                                 .then((success) => console.log(success))
-    //                                 .catch((error) => console.log(error))
-    //                             isSharedAdded = true;
-    //                         }
-    //                     } else {
-    //                         userShare.isShared.push({
-    //                             id: req.user._id,
-    //                             email: req.user.email,
-    //                             username: req.user.username
-    //                         });
-    //                         User.findByIdAndUpdate(userShare._id, userShare)
-    //                             .exec()
-    //                             .then((success) => console.log(success))
-    //                             .catch((error) => console.log(error))
-    //                         isSharedAdded = true;
-    //                     }
-    //                 })
-    //                 .catch((error) => console.log(error));
-    //         });
-    //     }
-    // };
-    ////////////////////////////////////////
 
     userRouter.put('/user/:id', auth, async (req, res) => {
         const id = req.params.id;
@@ -122,67 +80,115 @@ module.exports = function (io) {
                         email: req.body.email
                     }, (err, result) => {
                         if (result == '' || req.user._id.toString() === result[0]._id.toString()) {
-                            User.findById(req.user._id).exec().then(
-                                currentUser => {
-                                    // Check if there is a new friend, and add currentUser to the new friend
-                                    const newFriend = req.body.friend.filter(friend => !currentUser.friend.includes(friend));
-                                    console.log('newFriend', newFriend)
-                                    if (newFriend.length != 0) {
-                                        User.findById(newFriend[0].userId).exec().then(
-                                            newFriendUser => {
-                                                console.log('newFriendUser', newFriendUser)
-                                                newFriendUser.friend = newFriendUser.friend.push({
-                                                    userId: currentUser._id,
-                                                    email: currentUser.email,
-                                                    username: currentUser.username
-                                                })
-                                                User.findByIdAndUpdate(newFriendUser._id, newFriendUser).exec().then(
-                                                    result => console.log('result', result),
-                                                    err => console.log('error', err)
+
+                            User.find({
+                                'friend.userId': req.user._id
+                            }).then(
+                                result => {
+                                    // update all friends with new current user email and username
+                                    result.forEach(user => {
+                                        updatedUser = _.cloneDeep(user);
+                                        updatedUser.friend.forEach(friend => {
+                                            if (friend.userId == req.user._id) {
+                                                friend.email = req.body.email;
+                                                friend.username = req.body.username;
+                                            }
+                                        })
+                                        User.findByIdAndUpdate(updatedUser._id, updatedUser, {
+                                            new: true
+                                        }).then(
+                                            updatedUser => {
+                                                Socket.findOne({
+                                                    user: updatedUser._id,
+                                                    namespace: '/user'
+                                                }).then(
+                                                    socketUser => {
+                                                        io.of(socketUser.namespace).to(socketUser._id).emit('user');
+                                                    }
+                                                )
+                                            })
+                                    })
+                                    // Update currentUser
+                                    User.findByIdAndUpdate(id, {
+                                            ...req.body,
+                                            updatedOn: Date.now()
+                                        }, {
+                                            new: true
+                                        },
+                                        (err, currentUser) => {
+                                            if (err) {
+                                                return res.status(500).json({
+                                                    message: 'User Update Failed',
+                                                    code: 'user_update_failed'
+                                                });
+                                            }
+
+                                            // Check if there is a new friend, and add currentUser to the new friend
+                                            const newFriend = currentUser.friend.filter(friend => !req.user.friend.find(friend2 => friend.userId == friend2.userId));
+                                            if (newFriend.length != 0) {
+                                                User.findById(newFriend[0].userId).exec().then(
+                                                    newFriendUser => {
+                                                        let tempNewFriendUser = _.cloneDeep(newFriendUser)
+                                                        tempNewFriendUser.friend.push({
+                                                            userId: currentUser._id,
+                                                            email: currentUser.email,
+                                                            username: currentUser.username
+                                                        })
+                                                        User.findByIdAndUpdate(tempNewFriendUser._id, tempNewFriendUser).exec().then(
+                                                            result => {
+                                                                Socket.findOne({
+                                                                    user: result._id,
+                                                                    namespace: '/user'
+                                                                }).then(
+                                                                    socketUser => {
+                                                                        io.of(socketUser.namespace).to(socketUser._id).emit('user');
+                                                                    }
+                                                                )
+                                                            },
+                                                            err => console.log('error', err)
+                                                        )
+                                                    }
                                                 )
                                             }
-                                        )
-                                    }
 
-                                    // Check if a friend has been deleted, and remove currentUser to the old friend
-                                    const oldFriend = currentUser.friend.filter(friend => !req.body.friend.includes(friend));
-                                    console.log('oldFriend', oldFriend)
-                                    if (oldFriend.length != 0) {
-                                        User.findById(oldFriend[0].userId).exec().then(
-                                            oldFriendUser => {
-                                                console.log('oldFriendUser', oldFriendUser)
-                                                oldFriendUser.friend = oldFriendUser.friend.filter(friend => friend.userId != currentUser._id)
-                                                User.findByIdAndUpdate(oldFriendUser._id, oldFriendUser).exec().then(
-                                                    result => console.log('result', result),
-                                                    err => console.log('error', err)
+                                            // Check if a friend has been deleted, and remove currentUser to the old friend
+                                            const oldFriend = req.user.friend.filter(friend => !currentUser.friend.find(friend2 => friend.userId == friend2.userId));
+                                            if (oldFriend.length != 0) {
+                                                User.findById(oldFriend[0].userId).exec().then(
+                                                    oldFriendUser => {
+                                                        let tempOldFriendUser = _.cloneDeep(oldFriendUser)
+                                                        tempOldFriendUser.friend = tempOldFriendUser.friend.filter(friend => friend.userId != currentUser._id)
+                                                        User.findByIdAndUpdate(tempOldFriendUser._id, tempOldFriendUser).exec().then(
+                                                            result => {
+                                                                Socket.findOne({
+                                                                    user: result._id,
+                                                                    namespace: '/user'
+                                                                }).then(
+                                                                    socketUser => {
+                                                                        io.of(socketUser.namespace).to(socketUser._id).emit('user');
+                                                                    }
+                                                                )
+                                                            },
+                                                            err => console.log('error', err)
+                                                        )
+                                                    }
                                                 )
                                             }
-                                        )
-                                    }
-                                }
-                            )
-
-                            // Update currentUser
-                            User.findByIdAndUpdate(id, {
-                                    username: req.body.username,
-                                    email: req.body.email,
-                                    friend: req.body.friend,
-                                    birthdate: req.body.birthdate,
-                                    lang: req.body.lang,
-                                    updatedOn: Date.now()
-                                },
-                                (err, user) => {
-                                    if (err) {
-                                        return res.status(500).json({
-                                            message: 'User Update Failed',
-                                            code: 'user_update_failed'
+                                            Socket.findOne({
+                                                user: req.user._id,
+                                                namespace: '/user'
+                                            }).then(
+                                                socketUser => {
+                                                    io.of(socketUser.namespace).to(socketUser._id).emit('user');
+                                                }
+                                            )
+                                            // io.of('/user').emit('user');
+                                            res.status(202).json({
+                                                msg: `user updated`
+                                            });
                                         });
-                                    }
-                                    io.of('/user').emit('user');
-                                    res.status(202).json({
-                                        msg: `user updated`
-                                    });
-                                });
+                                })
+
                         } else {
                             return res.status(409).json({
                                 message: `email or user already exist`,

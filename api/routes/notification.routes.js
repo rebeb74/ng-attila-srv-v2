@@ -1,5 +1,6 @@
 const express = require('express');
 const Notification = require('../models/notification');
+const Socket = require('../models/socketUsers');
 const {
     auth
 } = require('../middleware');
@@ -14,7 +15,13 @@ module.exports = function (io) {
 
             await notification.save();
 
-            io.of('/notification').emit('notification', notification);
+            await Socket.find({$or: [{user: notification.notificationUserId}, {user: notification.senderUserId}],namespace:'/notification'}).then(
+                result => {
+                    result.forEach(socketUser => {
+                        io.of(socketUser.namespace).to(socketUser._id).emit('notification', notification);
+                    })
+                }
+            )
 
             res.send(notification);
 
@@ -81,7 +88,13 @@ module.exports = function (io) {
                     });
                 }
             });
-        io.of('/notification').emit('notification', notification);
+            Socket.find({$or: [{user: notification.notificationUserId}, {user: notification.senderUserId}],namespace:'/notification'}).then(
+            result => {
+                result.forEach(socketUser => {
+                    io.of(socketUser.namespace).to(socketUser._id).emit('notification', notification);
+                })
+            }
+        )
         res.status(202).json(notification);
     });
 
@@ -89,7 +102,13 @@ module.exports = function (io) {
         const id = req.params.id;
         await Notification.findById(id).exec().then(
             notification => {
-                io.of('/notification').emit('notification', notification)
+                Socket.find({$or: [{user: notification.notificationUserId}, {user: notification.senderUserId}],namespace:'/notification'}).then(
+                    result => {
+                        result.forEach(socketUser => {
+                            io.of(socketUser.namespace).to(socketUser._id).emit('notification', notification);
+                        })
+                    }
+                )
                 Notification.findByIdAndDelete(id, (err, notification) => {
                     if (err) {
                         return res.status(404).json({
