@@ -103,7 +103,7 @@ module.exports = function (io) {
                                                     namespace: '/user'
                                                 }).then(
                                                     socketUser => {
-                                                        io.of(socketUser.namespace).to(socketUser._id).emit('user');
+                                                        io.of(socketUser.namespace).to(socketUser._id).emit('user', socketUser.user);
                                                     }
                                                 )
                                             })
@@ -141,7 +141,7 @@ module.exports = function (io) {
                                                                     namespace: '/user'
                                                                 }).then(
                                                                     socketUser => {
-                                                                        io.of(socketUser.namespace).to(socketUser._id).emit('user');
+                                                                        io.of(socketUser.namespace).to(socketUser._id).emit('user', socketUser.user);
                                                                     }
                                                                 )
                                                             },
@@ -165,7 +165,7 @@ module.exports = function (io) {
                                                                     namespace: '/user'
                                                                 }).then(
                                                                     socketUser => {
-                                                                        io.of(socketUser.namespace).to(socketUser._id).emit('user');
+                                                                        io.of(socketUser.namespace).to(socketUser._id).emit('user', socketUser.user);
                                                                     }
                                                                 )
                                                             },
@@ -179,10 +179,9 @@ module.exports = function (io) {
                                                 namespace: '/user'
                                             }).then(
                                                 socketUser => {
-                                                    io.of(socketUser.namespace).to(socketUser._id).emit('user');
+                                                    io.of(socketUser.namespace).to(socketUser._id).emit('user', socketUser.user);
                                                 }
                                             )
-                                            // io.of('/user').emit('user');
                                             res.status(202).json({
                                                 msg: `user updated`
                                             });
@@ -232,6 +231,9 @@ module.exports = function (io) {
         }
     });
 
+    userRouter.get('/key', auth, async (req, res) => {
+            res.status(200).json(req.user.secretKey)
+    });
 
     return userRouter;
 };

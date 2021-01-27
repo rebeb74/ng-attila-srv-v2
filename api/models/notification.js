@@ -9,7 +9,7 @@ const notificationSchema = new mongoose.Schema({
     senderUserId: String,
     senderUsername: String,
     senderEmail: String,
-    createdOn: { type: Date, default: Date.now }
+    createdOn: String
 });
 
 module.exports = mongoose.model('notification', notificationSchema);

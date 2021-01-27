@@ -13,5 +13,5 @@ env = dotenvParseVariables(env.parsed);
  */
 module.exports = {
   token: token(env),
-  server: server(env)
+  server: server(env),
 };

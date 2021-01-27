@@ -94,6 +94,24 @@ io.of('/user').on('connection', socket => {
         }
     )
 });
+io.of('/event').on('connection', socket => {
+    console.log(`[Event] - New client connected : SocketID ${socket.id}, userId : ${socket.handshake.query.userId}`);
+    Socket.findOneAndDelete({user: socket.handshake.query.userId, namespace: socket.nsp.name}).exec().then(
+        () => {
+            const newSocketUser = new Socket({
+                _id: socket.id,
+                user: socket.handshake.query.userId,
+                namespace: socket.nsp.name,
+                createdOn: socket.time
+            });
+            newSocketUser.save()
+            socket.on("disconnect", () => {
+                console.log(`[Event] - New client disconnected : SocketID ${socket.id}, userId : ${socket.handshake.query.userId}`);
+                Socket.findByIdAndDelete(socket.id).exec()
+            });
+        }
+    )
+});
 
 // API Configuration
 const userRouter = require('./api/routes/user.routes')(io);
@@ -101,6 +119,9 @@ app.use('/api', userRouter);
 
 const notificationRouter = require('./api/routes/notification.routes')(io);
 app.use('/api', notificationRouter);
+
+const eventsRouter = require('./api/routes/events.routes')(io);
+app.use('/api', eventsRouter);
 
 const api = require('./api/routes');
 app.use('/api', api);

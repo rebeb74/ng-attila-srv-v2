@@ -14,14 +14,9 @@ const userSchema = new mongoose.Schema({
         email: String,
         username: String,
     }],
-    createdOn: {
-        type: Date,
-        default: Date.now()
-    },
-    updatedOn: {
-        type: Date,
-        default: Date.now()
-    }
+    createdOn: String,
+    updatedOn: String,
+    secretKey: String
 });
 
 

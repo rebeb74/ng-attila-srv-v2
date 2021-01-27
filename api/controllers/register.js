@@ -1,10 +1,8 @@
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
-const {
-    MissingRequiredParameterError
-  } = require('../errors');
+const { MissingRequiredParameterError } = require('../errors');
+const crypto = require('crypto');
 
-const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 /**
  * Anything controller.
@@ -39,6 +37,7 @@ module.exports.register = (req, res) => {
                 user.password = bcryptedPassword;
                 user.isAdmin = false;
                 user.friend = [];
+                user.secretKey = crypto.randomBytes(64).toString('base64').replace(/\//g,'_').replace(/\+/g,'-');
                 user.save((err, user) => {
                     if (err) {
                         return res.status(500).json({

@@ -93,7 +93,16 @@ module.exports.login = async (req, res, next) => {
         } = await generateToken(user[0]);
 
         await res.json({
-          user: user[0]._id,
+          user: {
+            _id: user[0]._id,
+            email: user[0].email,
+            username: user[0].username,
+            lang: user[0].lang,
+            birthdate: user[0].birthdate,
+            createdOn: user[0].createdOn,
+            updatedOn: user[0].updatedOn,
+            friend: user[0].friend,
+          },
           tokens: {
             accessToken,
             accessTokenExpiresIn: config.accessToken.expiresIn,
@@ -175,7 +184,7 @@ module.exports.refreshToken = async (req, res, next) => {
 };
 
 module.exports.logout = async (req, res, next) => {
-  try{
+  try {
     const refreshToken = req.body.token;
     if (!refreshToken) {
       throw new MissingRequiredParameterError({
@@ -198,7 +207,7 @@ module.exports.logout = async (req, res, next) => {
     res.status(200).json({
       msg: 'logged out'
     });
-  } catch(err){
+  } catch (err) {
     next(err);
   }
 };
