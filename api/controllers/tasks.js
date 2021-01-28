@@ -43,8 +43,8 @@ module.exports.getTasks = (req, res) => {
             'createdOn': -1
         })
         .exec()
-        .then(tasks => res.status(200).json(tasks))
-        .catch(err => res.status(500).json({
+        .then((tasks) => res.status(200).json(tasks))
+        .catch((err) => res.status(500).json({
             message: 'no tasks found :(',
             error: err
         }));
@@ -63,7 +63,7 @@ module.exports.getTaskById = (req, res) => {
             }
 
         })
-        .catch(err => res.status(404).json({
+        .catch((err) => res.status(404).json({
             message: `task with id ${id} not found`,
             error: err
         }));
@@ -78,8 +78,8 @@ module.exports.getShareTasksByUserId = (req, res) => {
           .then((task) => {
               return res.status(200).json(task);
           })
-          .catch(err => res.status(404).json({
-            message: `task not found`,
+          .catch((err) => res.status(404).json({
+            message: 'task not found',
             error: err
           }));
         } else {
@@ -123,7 +123,7 @@ module.exports.updateTaskById = (req, res) => {
                 });
             }
         })
-        .catch(err => res.status(404).json({
+        .catch((err) => res.status(404).json({
             message: `task with id ${id} not found`,
             error: err
         }));
@@ -148,7 +148,7 @@ module.exports.deleteTaskById = (req, res) => {
                 });
             }
         })
-        .catch(err => res.status(404).json({
+        .catch((err) => res.status(404).json({
             message: `task with id ${id} not found`,
             error: err
         }));
@@ -157,7 +157,7 @@ module.exports.deleteTaskById = (req, res) => {
 module.exports.deleteTasksByIds = (req, res) => {
     const ids = req.query.ids;
     // split tasks
-    const allIds = ids.split(',').map(id => {
+    const allIds = ids.split(',').map((id) => {
         if (id.match(/^[0-9a-fA-F]{24}$/)) {
             return mongoose.Types.ObjectId((id));
         } else {

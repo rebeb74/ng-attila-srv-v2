@@ -31,8 +31,8 @@ module.exports.getEvents = (req, res) => {
       'createdOn': -1
     })
     .exec()
-    .then(events => res.status(200).json(events))
-    .catch(err => res.status(500).json({
+    .then((events) => res.status(200).json(events))
+    .catch((err) => res.status(500).json({
       message: 'no events found :(',
       error: err
     }));
@@ -51,8 +51,8 @@ module.exports.getEventById = (req, res) => {
       }
 
     })
-    .catch(err => res.status(404).json({
-      message: `event not found`,
+    .catch((err) => res.status(404).json({
+      message: 'event not found',
       error: err
     }));
 };
@@ -66,7 +66,7 @@ module.exports.getShareEventsByUserId = (req, res) => {
         .then((event) => {
             return res.status(200).json(event);
         })
-        .catch(err => res.status(404).json({
+        .catch((err) => res.status(404).json({
           message: `event with id ${id} not found`,
           error: err
         }));
@@ -112,7 +112,7 @@ module.exports.updateEventById = (req, res) => {
         });
       }
     })
-    .catch(err => res.status(404).json({
+    .catch((err) => res.status(404).json({
       message: `event with id ${id} not found`,
       error: err
     }));
@@ -137,7 +137,7 @@ module.exports.deleteEventById = (req, res) => {
         });
       }
     })
-    .catch(err => res.status(404).json({
+    .catch((err) => res.status(404).json({
       message: `event with id ${id} not found`,
       error: err
     }));
@@ -146,7 +146,7 @@ module.exports.deleteEventById = (req, res) => {
 module.exports.deleteEventsByIds = (req, res) => {
   const ids = req.query.ids;
   // split events
-  const allIds = ids.split(',').map(id => {
+  const allIds = ids.split(',').map((id) => {
     if (id.match(/^[0-9a-fA-F]{24}$/)) {
       return mongoose.Types.ObjectId((id));
     } else {

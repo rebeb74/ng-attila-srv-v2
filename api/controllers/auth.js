@@ -15,7 +15,6 @@ const bcrypt = require('bcryptjs');
 
 
 async function generateToken(user) {
-  const xsrfToken = crypto.randomBytes(64).toString('hex');
   const accessToken = await jwt.sign({
       username: user.username,
       email: user.email
@@ -159,7 +158,7 @@ module.exports.refreshToken = async (req, res, next) => {
         }
       });
     }
-    const user = await User.findById(oldRefreshToken[0].userId).exec()
+    const user = await User.findById(oldRefreshToken[0].userId).exec();
 
     const {
       accessToken,

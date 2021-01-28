@@ -1,5 +1,4 @@
 const login = require('./login');
-const users = require('./users');
 const events = require('./events');
 const tasks = require('./tasks');
 const register = require('./register');
@@ -12,4 +11,4 @@ const contact = require('./contact');
  * Routes.
  * @module routes
  */
-module.exports = [login, users, events, tasks, register, password, lists, notifications, contact];
+module.exports = [login, events, tasks, register, password, lists, notifications, contact];

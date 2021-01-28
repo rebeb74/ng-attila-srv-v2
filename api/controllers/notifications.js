@@ -20,7 +20,7 @@ module.exports.createNotification = async (req, res) => {
     });
 
   } catch (error) {
-    return res.status(500).json(err);
+    return res.status(500).json(error);
   }
 };
 
@@ -32,10 +32,10 @@ module.exports.getNotifications = (req, res) => {
       'createdOn': -1
     })
     .exec()
-    .then(notifications => {
-      res.status(200).json(notifications)
+    .then((notifications) => {
+      res.status(200).json(notifications);
     })
-    .catch(err => res.status(500).json({
+    .catch((err) => res.status(500).json({
       message: 'no notifications found :(',
       code: 'notifications_not_found',
       error: err
@@ -56,8 +56,8 @@ module.exports.getNotificationById = (req, res) => {
       }
 
     })
-    .catch(err => res.status(404).json({
-      message: `notification not found`,
+    .catch((err) => res.status(404).json({
+      message: 'notification not found',
       error: err,
       code: 'notification_not_found'
     }));
@@ -71,12 +71,12 @@ module.exports.updateNotificationById = (req, res) => {
         Notification.findByIdAndUpdate(id, {
             read: req.body.read,
           },
-          (err, notification) => {
+          (err) => {
             if (err) {
               return res.status(500).json(err);
             }
             res.status(202).json({
-              msg: `notification updated`
+              msg: 'notification updated'
             });
           });
       } else {
@@ -86,7 +86,7 @@ module.exports.updateNotificationById = (req, res) => {
         });
       }
     })
-    .catch(err => res.status(404).json({
+    .catch((err) => res.status(404).json({
       message: `notification with id ${id} not found`,
       error: err,
       code: 'notification_not_found'
@@ -98,12 +98,12 @@ module.exports.deleteNotificationById = (req, res) => {
   Notification.findById(id)
     .then((notification) => {
       if (notification.notificationUserId == req.user._id || req.user.isAdmin) {
-        Notification.findByIdAndDelete(id, (err, notification) => {
+        Notification.findByIdAndDelete(id, (err) => {
           if (err) {
             return res.status(500).json(err);
           }
           res.status(202).json({
-            msg: `notification deleted`
+            msg: 'notification deleted'
           });
         });
       } else {
@@ -113,7 +113,7 @@ module.exports.deleteNotificationById = (req, res) => {
         });
       }
     })
-    .catch(err => res.status(404).json({
+    .catch((err) => res.status(404).json({
       message: `notification with id ${id} not found`,
       error: err,
       code: 'notification_not_found'

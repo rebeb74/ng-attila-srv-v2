@@ -7,7 +7,7 @@
  * Initialize the configuration.
  * @param {Object} env - The environment variables.
  */
-module.exports = env => ({
+module.exports = (env) => ({
   accessToken: {
     secret: env.ACCESS_TOKEN_SECRET,
     expiresIn: env.ACCESS_TOKEN_EXPIRES_IN

@@ -27,8 +27,8 @@ const server = http.createServer(app);
 const socketIO = require('socket.io');
 const io = socketIO(server, {
     cors: {
-        origin: "http://localhost:4200",
-        methods: ["GET", "POST"]
+        origin: 'http://localhost:4200',
+        methods: ['GET', 'POST']
     },
 });
 
@@ -58,7 +58,7 @@ mongoose.connect(db, {
 });
 
 // Socket.io configuration
-io.of('/notification').on('connection', socket => {
+io.of('/notification').on('connection', (socket) => {
     console.log(`[Notification] - New client connected : SocketID ${socket.id}, userId : ${socket.handshake.query.userId}`);
     Socket.findOneAndDelete({user: socket.handshake.query.userId, namespace: socket.nsp.name}).exec().then(
         () => {
@@ -68,15 +68,15 @@ io.of('/notification').on('connection', socket => {
                 namespace: socket.nsp.name,
                 createdOn: socket.time
             });
-            newSocketUser.save()
-            socket.on("disconnect", () => {
+            newSocketUser.save();
+            socket.on('disconnect', () => {
                 console.log(`[Notification] - New client disconnected : SocketID ${socket.id}, userId : ${socket.handshake.query.userId}`);
-                Socket.findByIdAndDelete(socket.id).exec()
+                Socket.findByIdAndDelete(socket.id).exec();
             });
         }
     );
 });
-io.of('/user').on('connection', socket => {
+io.of('/user').on('connection', (socket) => {
     console.log(`[User] - New client connected : SocketID ${socket.id}, userId : ${socket.handshake.query.userId}`);
     Socket.findOneAndDelete({user: socket.handshake.query.userId, namespace: socket.nsp.name}).exec().then(
         () => {
@@ -86,15 +86,15 @@ io.of('/user').on('connection', socket => {
                 namespace: socket.nsp.name,
                 createdOn: socket.time
             });
-            newSocketUser.save()
-            socket.on("disconnect", () => {
+            newSocketUser.save();
+            socket.on('disconnect', () => {
                 console.log(`[User] - New client disconnected : SocketID ${socket.id}, userId : ${socket.handshake.query.userId}`);
-                Socket.findByIdAndDelete(socket.id).exec()
+                Socket.findByIdAndDelete(socket.id).exec();
             });
         }
-    )
+    );
 });
-io.of('/event').on('connection', socket => {
+io.of('/event').on('connection', (socket) => {
     console.log(`[Event] - New client connected : SocketID ${socket.id}, userId : ${socket.handshake.query.userId}`);
     Socket.findOneAndDelete({user: socket.handshake.query.userId, namespace: socket.nsp.name}).exec().then(
         () => {
@@ -104,13 +104,13 @@ io.of('/event').on('connection', socket => {
                 namespace: socket.nsp.name,
                 createdOn: socket.time
             });
-            newSocketUser.save()
-            socket.on("disconnect", () => {
+            newSocketUser.save();
+            socket.on('disconnect', () => {
                 console.log(`[Event] - New client disconnected : SocketID ${socket.id}, userId : ${socket.handshake.query.userId}`);
-                Socket.findByIdAndDelete(socket.id).exec()
+                Socket.findByIdAndDelete(socket.id).exec();
             });
         }
-    )
+    );
 });
 
 // API Configuration

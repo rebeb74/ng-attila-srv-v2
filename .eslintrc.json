@@ -4,23 +4,29 @@
         "node": true
     },
     "extends": "eslint:recommended",
-    "parserOptions": {
-        "ecmaVersion": 8,
-        "sourceType": "module",
-        "ecmaFeatures": {
-            "experimentalObjectRestSpread": true
-        }
-    },
     "rules": {
-        "no-console": 0,
-        "no-useless-escape": 0,
-        "quotes": [
-            "error",
-            "single"
-        ],
-        "semi": [
-            "error",
-            "always"
-        ]
+        // Place to specify ESLint rules. Can be used to overwrite rules specified from the extended configs
+        "semi": ["warn"],
+        "no-empty-function": ["off"],
+        "@typescript-eslint/no-empty-function": ["off"],
+        "@typescript-eslint/no-var-requires": ["off"],
+        "@typescript-eslint/no-explicit-any": ["off"],
+        "@typescript-eslint/no-unused-vars": ["off"],
+        "@typescript-eslint/explicit-module-boundary-types": ["off"],
+        "max-len": ["warn", {
+            "code": 250
+        }],
+        "@typescript-eslint/no-non-null-assertion": ["off"],
+        "no-extra-boolean-cast": ["off"],
+        "no-multiple-empty-lines": ["warn"],
+        "eol-last": ["warn"],
+        "arrow-parens": ["warn"],
+        "block-spacing": ["warn"],
+        "spaced-comment": ["warn"],
+        "quotes": ["error", "single"]
+    },
+    "parserOptions": {
+        "ecmaVersion": 2020, // Allows for the parsing of modern ECMAScript features
+        "sourceType": "module" // Allows for the use of imports
     }
 }

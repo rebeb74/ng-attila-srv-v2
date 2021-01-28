@@ -16,17 +16,17 @@ module.exports = function (io) {
             await notification.save();
 
             await Socket.find({$or: [{user: notification.notificationUserId}, {user: notification.senderUserId}],namespace:'/notification'}).then(
-                result => {
-                    result.forEach(socketUser => {
+                (result) => {
+                    result.forEach((socketUser) => {
                         io.of(socketUser.namespace).to(socketUser._id).emit('notification', notification);
-                    })
+                    });
                 }
-            )
+            );
 
             res.send(notification);
 
         } catch (error) {
-            console.log(error)
+            console.log(error);
             return res.status(500).json(error);
         }
     });
@@ -43,10 +43,10 @@ module.exports = function (io) {
                 'createdOn': -1
             })
             .exec()
-            .then(notifications => {
-                res.status(200).json(notifications)
+            .then((notifications) => {
+                res.status(200).json(notifications);
             })
-            .catch(err => res.status(500).json({
+            .catch((err) => res.status(500).json({
                 message: 'no notifications found :(',
                 code: 'notifications_not_found',
                 error: err
@@ -67,8 +67,8 @@ module.exports = function (io) {
                 }
 
             })
-            .catch(err => res.status(404).json({
-                message: `notification not found`,
+            .catch((err) => res.status(404).json({
+                message: 'notification not found',
                 error: err,
                 code: 'notification_not_found'
             }));
@@ -79,7 +79,7 @@ module.exports = function (io) {
         const notification = await Notification.findByIdAndUpdate(id, {
                 read: req.body.read,
             },
-            (err, notification) => {
+            (err) => {
                 if (err) {
                     return res.status(404).json({
                         message: `notification with id ${id} not found`,
@@ -89,27 +89,27 @@ module.exports = function (io) {
                 }
             });
             Socket.find({$or: [{user: notification.notificationUserId}, {user: notification.senderUserId}],namespace:'/notification'}).then(
-            result => {
-                result.forEach(socketUser => {
+            (result) => {
+                result.forEach((socketUser) => {
                     io.of(socketUser.namespace).to(socketUser._id).emit('notification', notification);
-                })
+                });
             }
-        )
+        );
         res.status(202).json(notification);
     });
 
     notificationRouter.delete('/notification/:id', auth, async (req, res) => {
         const id = req.params.id;
         await Notification.findById(id).exec().then(
-            notification => {
+            (notification) => {
                 Socket.find({$or: [{user: notification.notificationUserId}, {user: notification.senderUserId}],namespace:'/notification'}).then(
-                    result => {
-                        result.forEach(socketUser => {
+                    (result) => {
+                        result.forEach((socketUser) => {
                             io.of(socketUser.namespace).to(socketUser._id).emit('notification', notification);
-                        })
+                        });
                     }
-                )
-                Notification.findByIdAndDelete(id, (err, notification) => {
+                );
+                Notification.findByIdAndDelete(id, (err) => {
                     if (err) {
                         return res.status(404).json({
                             message: `notification with id ${id} not found`,
@@ -120,7 +120,7 @@ module.exports = function (io) {
                     res.status(202).json('notification deleted');
                 });
             }
-        )
+        );
     });
 
 

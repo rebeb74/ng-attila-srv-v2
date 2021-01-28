@@ -27,7 +27,6 @@ module.exports = async (req, res, next) => {
     const {
       headers
     } = req;
-
     
     
     if (!headers.authorization) {

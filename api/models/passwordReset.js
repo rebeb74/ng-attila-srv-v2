@@ -1,4 +1,4 @@
-const { Schema, model } = require('mongoose')
+const { Schema, model } = require('mongoose');
 
 const schema = new Schema({
   user: {
@@ -12,9 +12,9 @@ const schema = new Schema({
   }
 }, {
   timestamps: true
-})
+});
 
-schema.index({ 'updatedAt': 1 }, { expireAfterSeconds: 7200 })
+schema.index({ 'updatedAt': 1 }, { expireAfterSeconds: 7200 });
 
 
-module.exports = model('PasswordReset', schema)
+module.exports = model('PasswordReset', schema);

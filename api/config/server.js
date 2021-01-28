@@ -1,6 +1,3 @@
-const path = require('path');
-const appRoot = require('app-root-path');
-
 /**
  * Server configuration.
  * @module config/server
@@ -10,7 +7,7 @@ const appRoot = require('app-root-path');
  * Initialize the configuration.
  * @param {Object} env - The environment variables.
  */
-module.exports = env => ({
+module.exports = () => ({
   host: process.env.HOST || 'localhost',
   port: process.env.PORT || 3000,
   db: process.env.DB

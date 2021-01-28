@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { auth } = require('../middleware');
-const { notifications: controller } = require('../controllers');
+const {
+    notifications: controller
+} = require('../controllers');
 
 router.post(
     '/notification',

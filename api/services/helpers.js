@@ -1,4 +1,4 @@
-const nodemailer = require('nodemailer')
+const nodemailer = require('nodemailer');
 
 module.exports = {
   sendEmail: async ({ to, subject, text }) => {
@@ -11,15 +11,13 @@ module.exports = {
         user: process.env.EMAIL_ADDRESS,
         pass: process.env.EMAIL_PASSWORD
       }
-    })
+    });
     /* Send the email */
-    let info = await transporter.sendMail({
+    await transporter.sendMail({
       from: `"${process.env.EMAIL_NAME}" <${process.env.EMAIL_ADDRESS}>`,
       to,
       subject,
       text
-    })
-    /* Preview only available when sending through an Ethereal account */
-    // console.log(`Message preview URL: ${nodemailer.getTestMessageUrl(info)}`)
+    });
   }
-}
+};
