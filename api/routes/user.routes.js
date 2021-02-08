@@ -7,9 +7,9 @@ const {
 const _ = require('lodash');
 const {
     MissingRequiredParameterError
-  } = require('../errors');
+} = require('../errors');
 
-module.exports = function (io) {
+module.exports = function(io) {
     const userRouter = express.Router();
 
     userRouter.get('/users', auth, async (req, res) => {
@@ -235,7 +235,7 @@ module.exports = function (io) {
     });
 
     userRouter.get('/key', auth, async (req, res) => {
-            res.status(200).json(req.user.secretKey);
+        res.status(200).json(req.user.secretKey);
     });
 
     return userRouter;

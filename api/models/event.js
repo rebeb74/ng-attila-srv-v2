@@ -1,7 +1,12 @@
 const mongoose = require('mongoose');
 
+const friendSchema = new mongoose.Schema({
+    userId: String,
+    email: String,
+    username: String,
+});
+
 const eventSchema = new mongoose.Schema({
-    _id: String,
     userId: String,
     title: String,
     description: String,
@@ -10,7 +15,7 @@ const eventSchema = new mongoose.Schema({
     place: String,
     alert: String,
     repeat: String,
-    altern: String,
+    altern: friendSchema | '',
     type: 'meeting' | 'task',
     createdOn: String,
     updatedOn: String

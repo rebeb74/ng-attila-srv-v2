@@ -5,7 +5,7 @@ const {
     auth
 } = require('../middleware');
 
-module.exports = function (io) {
+module.exports = function(io) {
     const notificationRouter = express.Router();
 
     notificationRouter.post('/notification', auth, async (req, res) => {
@@ -15,7 +15,14 @@ module.exports = function (io) {
 
             await notification.save();
 
-            await Socket.find({$or: [{user: notification.notificationUserId}, {user: notification.senderUserId}],namespace:'/notification'}).then(
+            await Socket.find({
+                $or: [{
+                    user: notification.notificationUserId
+                }, {
+                    user: notification.senderUserId
+                }],
+                namespace: '/notification'
+            }).then(
                 (result) => {
                     result.forEach((socketUser) => {
                         io.of(socketUser.namespace).to(socketUser._id).emit('notification', notification);
@@ -88,7 +95,14 @@ module.exports = function (io) {
                     });
                 }
             });
-            Socket.find({$or: [{user: notification.notificationUserId}, {user: notification.senderUserId}],namespace:'/notification'}).then(
+        Socket.find({
+            $or: [{
+                user: notification.notificationUserId
+            }, {
+                user: notification.senderUserId
+            }],
+            namespace: '/notification'
+        }).then(
             (result) => {
                 result.forEach((socketUser) => {
                     io.of(socketUser.namespace).to(socketUser._id).emit('notification', notification);
@@ -102,10 +116,20 @@ module.exports = function (io) {
         const id = req.params.id;
         await Notification.findById(id).exec().then(
             (notification) => {
-                Socket.find({$or: [{user: notification.notificationUserId}, {user: notification.senderUserId}],namespace:'/notification'}).then(
+                Socket.find({
+                    $or: [{
+                        user: notification.notificationUserId
+                    }, {
+                        user: notification.senderUserId
+                    }],
+                    namespace: '/notification'
+                }).then(
                     (result) => {
                         result.forEach((socketUser) => {
-                            io.of(socketUser.namespace).to(socketUser._id).emit('notification', notification);
+                            io.of(socketUser.namespace).to(socketUser._id).emit('notification', {
+                                action: 'delete',
+                                notification
+                            });
                         });
                     }
                 );
