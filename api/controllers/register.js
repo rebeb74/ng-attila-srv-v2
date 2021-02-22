@@ -1,6 +1,8 @@
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
-const { MissingRequiredParameterError } = require('../errors');
+const {
+    MissingRequiredParameterError
+} = require('../errors');
 const crypto = require('crypto');
 
 
@@ -16,28 +18,26 @@ const crypto = require('crypto');
  * @param {Object} res - Express response object.
  */
 module.exports.register = (req, res) => {
-    
+
     // Check parameters
     if (req.body.email == null || req.body.username == null || req.body.password == null) {
         throw new MissingRequiredParameterError({
             info: {
-              body: ['email, username, password']
+                body: ['email, username, password']
             }
-          });
+        });
     }
 
-    User.find({
-        $or: [{email: req.body.email}, { username: req.body.username }]
-    }, (err, result) => {
+    User.find().exec().then((users) => {
         // Check if email or username already exist
-        if (result == '') {
+        if (!users.find((user) => user.email == req.body.email || user.username.toLowerCase() == req.body.username.toLowerCase())) {
             // bcrypt password and create new user
             bcrypt.hash(req.body.password, 5, (err, bcryptedPassword) => {
                 const user = new User(req.body);
                 user.password = bcryptedPassword;
                 user.isAdmin = false;
                 user.friend = [];
-                user.secretKey = crypto.randomBytes(64).toString('base64').replace(/\//g,'_').replace(/\+/g,'-');
+                user.secretKey = crypto.randomBytes(64).toString('base64').replace(/\//g, '_').replace(/\+/g, '-');
                 user.save((err, user) => {
                     if (err) {
                         return res.status(500).json({

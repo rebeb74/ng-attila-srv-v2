@@ -9,6 +9,7 @@ const notificationSchema = new mongoose.Schema({
     senderUserId: String,
     senderUsername: String,
     senderEmail: String,
+    passedData: [String],
     createdOn: String
 });
 

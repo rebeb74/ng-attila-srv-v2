@@ -24,9 +24,11 @@ module.exports = function(io) {
                 namespace: '/notification'
             }).then(
                 (result) => {
-                    result.forEach((socketUser) => {
-                        io.of(socketUser.namespace).to(socketUser._id).emit('notification', notification);
-                    });
+                    if (result.length > 0) {
+                        result.forEach((socketUser) => {
+                            io.of(socketUser.namespace).to(socketUser._id).emit('notification', notification);
+                        });
+                    }
                 }
             );
 
@@ -60,58 +62,6 @@ module.exports = function(io) {
             }));
     });
 
-    notificationRouter.get('/notification/:id', auth, async (req, res) => {
-        const id = req.params.id;
-        await Notification.findById(id)
-            .then((notification) => {
-                if (notification.notificationUserId == req.user._id || req.user.isAdmin) {
-                    return res.status(200).json(notification);
-                } else {
-                    return res.status(403).json({
-                        message: 'unauthorized access',
-                        code: 'unauthorized_access'
-                    });
-                }
-
-            })
-            .catch((err) => res.status(404).json({
-                message: 'notification not found',
-                error: err,
-                code: 'notification_not_found'
-            }));
-    });
-
-    notificationRouter.put('/notification/:id', auth, async (req, res) => {
-        const id = req.params.id;
-        const notification = await Notification.findByIdAndUpdate(id, {
-                read: req.body.read,
-            },
-            (err) => {
-                if (err) {
-                    return res.status(404).json({
-                        message: `notification with id ${id} not found`,
-                        error: err,
-                        code: 'notification_not_found'
-                    });
-                }
-            });
-        Socket.find({
-            $or: [{
-                user: notification.notificationUserId
-            }, {
-                user: notification.senderUserId
-            }],
-            namespace: '/notification'
-        }).then(
-            (result) => {
-                result.forEach((socketUser) => {
-                    io.of(socketUser.namespace).to(socketUser._id).emit('notification', notification);
-                });
-            }
-        );
-        res.status(202).json(notification);
-    });
-
     notificationRouter.delete('/notification/:id', auth, async (req, res) => {
         const id = req.params.id;
         await Notification.findById(id).exec().then(
@@ -125,12 +75,14 @@ module.exports = function(io) {
                     namespace: '/notification'
                 }).then(
                     (result) => {
-                        result.forEach((socketUser) => {
-                            io.of(socketUser.namespace).to(socketUser._id).emit('notification', {
-                                action: 'delete',
-                                notification
+                        if (result.length > 0) {
+                            result.forEach((socketUser) => {
+                                io.of(socketUser.namespace).to(socketUser._id).emit('notification', {
+                                    action: 'delete',
+                                    notification
+                                });
                             });
-                        });
+                        }
                     }
                 );
                 Notification.findByIdAndDelete(id, (err) => {

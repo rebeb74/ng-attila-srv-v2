@@ -23,10 +23,12 @@ module.exports = function(io) {
                         namespace: '/event'
                     }).then(
                         (socketUser) => {
-                            io.of(socketUser[0].namespace).to(socketUser[0]._id).emit('event', {
-                                action: 'add',
-                                event
-                            });
+                            if (socketUser.length > 0) {
+                                io.of(socketUser[0].namespace).to(socketUser[0]._id).emit('event', {
+                                    action: 'add',
+                                    event
+                                });
+                            }
                         }
                     );
                 });
@@ -36,10 +38,12 @@ module.exports = function(io) {
                     namespace: '/event'
                 }).then(
                     (socketUser) => {
-                        io.of(socketUser[0].namespace).to(socketUser[0]._id).emit('event', {
-                            action: 'add',
-                            event
-                        });
+                        if (socketUser.length > 0) {
+                            io.of(socketUser[0].namespace).to(socketUser[0]._id).emit('event', {
+                                action: 'add',
+                                event
+                            });
+                        }
                     }
                 );
             }
@@ -92,25 +96,6 @@ module.exports = function(io) {
             }));
     });
 
-    eventsRouter.get('/event/:id', auth, async (req, res) => {
-        const id = req.params.id;
-        await Event.findById(id)
-            .then((event) => {
-                if (event.userId == req.user._id || req.user.isAdmin) {
-                    return res.status(200).json(event);
-                } else {
-                    return res.status(403).json({
-                        message: 'unauthorized access'
-                    });
-                }
-
-            })
-            .catch((err) => res.status(404).json({
-                message: 'event not found',
-                error: err
-            }));
-    });
-
     eventsRouter.put('/event/:id', auth, async (req, res) => {
         const id = req.params.id;
         await Event.findById(id)
@@ -128,10 +113,12 @@ module.exports = function(io) {
                                         namespace: '/event'
                                     }).then(
                                         (socketUser) => {
-                                            io.of(socketUser[0].namespace).to(socketUser[0]._id).emit('event', {
-                                                action: 'update',
-                                                event
-                                            });
+                                            if (socketUser.length > 0) {
+                                                io.of(socketUser[0].namespace).to(socketUser[0]._id).emit('event', {
+                                                    action: 'update',
+                                                    event
+                                                });
+                                            }
                                         }
                                     );
                                 });
@@ -141,10 +128,12 @@ module.exports = function(io) {
                                     namespace: '/event'
                                 }).then(
                                     (socketUser) => {
-                                        io.of(socketUser[0].namespace).to(socketUser[0]._id).emit('event', {
-                                            action: 'update',
-                                            event
-                                        });
+                                        if (socketUser.length > 0) {
+                                            io.of(socketUser[0].namespace).to(socketUser[0]._id).emit('event', {
+                                                action: 'update',
+                                                event
+                                            });
+                                        }
                                     }
                                 );
                             }
@@ -180,10 +169,12 @@ module.exports = function(io) {
                                     namespace: '/event'
                                 }).then(
                                     (socketUser) => {
-                                        io.of(socketUser[0].namespace).to(socketUser[0]._id).emit('event', {
-                                            action: 'delete',
-                                            event
-                                        });
+                                        if (socketUser.length > 0) {
+                                            io.of(socketUser[0].namespace).to(socketUser[0]._id).emit('event', {
+                                                action: 'delete',
+                                                event
+                                            });
+                                        }
                                     }
                                 );
                             });
@@ -193,10 +184,12 @@ module.exports = function(io) {
                                 namespace: '/event'
                             }).then(
                                 (socketUser) => {
-                                    io.of(socketUser[0].namespace).to(socketUser[0]._id).emit('event', {
-                                        action: 'delete',
-                                        event
-                                    });
+                                    if (socketUser.length > 0) {
+                                        io.of(socketUser[0].namespace).to(socketUser[0]._id).emit('event', {
+                                            action: 'delete',
+                                            event
+                                        });
+                                    }
                                 }
                             );
                         }
