@@ -27,7 +27,7 @@ const server = http.createServer(app);
 const socketIO = require('socket.io');
 const io = socketIO(server, {
     cors: {
-        origin: 'http://192.168.1.117:4200',
+        origin: process.env.DOMAIN,
         methods: ['GET', 'POST']
     },
 });
@@ -46,7 +46,7 @@ app.use(helmet());
 // Cors
 app.use(cors({
     credentials: true,
-    origin: 'http://192.168.1.117:4200'
+    origin: process.env.DOMAIN
 }));
 
 // Mongoose Configuration
