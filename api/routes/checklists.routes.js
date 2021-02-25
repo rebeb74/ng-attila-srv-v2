@@ -73,9 +73,46 @@ module.exports = function(io) {
                             if (err) {
                                 return res.status(500).json(err);
                             }
-                            if (checklist.friendShares.length > 0) {
-                                if (req.user._id == checklist.userId) {
-                                    checklist.friendShares.forEach((friend) => {
+                            const newShareFriends = req.body.friendShares.filter((friend1) => !checklist.friendShares.find((friend2) => friend1.userId == friend2.userId));
+                            const removedShareFriends = checklist.friendShares.filter((friend1) => !req.body.friendShares.find((friend2) => friend1.userId == friend2.userId));
+
+                            if (newShareFriends.length > 0) {
+                                newShareFriends.forEach((friend) => {
+                                    Socket.find({
+                                        user: friend.userId,
+                                        namespace: '/checklist'
+                                    }).then(
+                                        (socketUser) => {
+                                            if (socketUser.length > 0) {
+                                                io.of(socketUser[0].namespace).to(socketUser[0]._id).emit('checklist', {
+                                                    action: 'update',
+                                                    checklist: req.body
+                                                });
+                                            }
+                                        }
+                                    );
+                                });
+                            }
+                            if (removedShareFriends.length > 0) {
+                                removedShareFriends.forEach((friend) => {
+                                    Socket.find({
+                                        user: friend.userId,
+                                        namespace: '/checklist'
+                                    }).then(
+                                        (socketUser) => {
+                                            if (socketUser.length > 0) {
+                                                io.of(socketUser[0].namespace).to(socketUser[0]._id).emit('checklist', {
+                                                    action: 'update',
+                                                    checklist: req.body
+                                                });
+                                            }
+                                        }
+                                    );
+                                });
+                            }
+                            if (req.body.friendShares.length > 0) {
+                                if (req.user._id == req.body.userId) {
+                                    req.body.friendShares.forEach((friend) => {
                                         Socket.find({
                                             user: friend.userId,
                                             namespace: '/checklist'
@@ -84,7 +121,7 @@ module.exports = function(io) {
                                                 if (socketUser.length > 0) {
                                                     io.of(socketUser[0].namespace).to(socketUser[0]._id).emit('checklist', {
                                                         action: 'update',
-                                                        checklist
+                                                        checklist: req.body
                                                     });
                                                 }
                                             }
@@ -92,19 +129,19 @@ module.exports = function(io) {
                                     });
                                 } else {
                                     Socket.find({
-                                        user: checklist.userId,
+                                        user: req.body.userId,
                                         namespace: '/checklist'
                                     }).then(
                                         (socketUser) => {
                                             if (socketUser.length > 0) {
                                                 io.of(socketUser[0].namespace).to(socketUser[0]._id).emit('checklist', {
                                                     action: 'update',
-                                                    checklist
+                                                    checklist: req.body
                                                 });
                                             }
                                         }
                                     );
-                                    checklist.friendShares.forEach((friend) => {
+                                    req.body.friendShares.forEach((friend) => {
                                         if (friend.userId !== req.user._id) {
                                             Socket.find({
                                                 user: friend.userId,
@@ -114,7 +151,7 @@ module.exports = function(io) {
                                                     if (socketUser.length > 0) {
                                                         io.of(socketUser[0].namespace).to(socketUser[0]._id).emit('checklist', {
                                                             action: 'update',
-                                                            checklist
+                                                            checklist: req.body
                                                         });
                                                     }
                                                 }
