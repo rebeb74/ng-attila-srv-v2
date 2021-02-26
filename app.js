@@ -28,13 +28,7 @@ const whitelist = ['https://www.codeattila.ch', 'https://www.v1.codeattila.ch', 
 const socketIO = require('socket.io');
 const io = socketIO(server, {
     cors: {
-        origin: function(origin, callback) {
-            if (whitelist.indexOf(origin) !== -1) {
-                callback(null, true);
-            } else {
-                callback(new Error('Not allowed by CORS'));
-            }
-        },
+        origin: 'https://www.codeattila.ch',
         methods: ['GET', 'POST']
     },
 });
@@ -54,14 +48,18 @@ app.use(helmet());
 // Cors
 var corsOptions = {
     credentials: true,
-    origin: function(origin, callback) {
-        if (whitelist.indexOf(origin) !== -1) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    }
+    origin: 'https://www.codeattila.ch'
 };
+// var corsOptions = {
+//     credentials: true,
+//     origin: function(origin, callback) {
+//         if (whitelist.indexOf(origin) !== -1) {
+//             callback(null, true);
+//         } else {
+//             callback(new Error('Not allowed by CORS'));
+//         }
+//     }
+// };
 
 app.use(cors(corsOptions));
 
