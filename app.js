@@ -44,9 +44,16 @@ app.use(bodyParser.urlencoded({
 // helmet
 app.use(helmet());
 // Cors
+var whitelist = process.env.DOMAIN;
 app.use(cors({
     credentials: true,
-    origin: process.env.DOMAIN
+    origin: function(origin, callback) {
+        if (whitelist.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    }
 }));
 
 // Mongoose Configuration
