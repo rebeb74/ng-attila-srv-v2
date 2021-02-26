@@ -19,7 +19,6 @@ const {
 const helmet = require('helmet');
 require('dotenv').config();
 
-var whitelist = ['https://www.codeattila.ch', 'https://www.v1.codeattila.ch', 'https://www.v2.codeattila.ch', 'http://localhost:4200', 'http://192.168.1.117:4200'];
 // Instantiate server
 const app = express();
 const http = require('http');
@@ -28,13 +27,7 @@ const server = http.createServer(app);
 const socketIO = require('socket.io');
 const io = socketIO(server, {
     cors: {
-        origin: function(origin, callback) {
-            if (whitelist.indexOf(origin) !== -1) {
-                callback(null, true);
-            } else {
-                callback(new Error('Not allowed by CORS'));
-            }
-        },
+        origin: 'https://www.codeattila.ch',
         methods: ['GET', 'POST']
     },
 });
@@ -53,13 +46,7 @@ app.use(helmet());
 // Cors
 app.use(cors({
     credentials: true,
-    origin: function(origin, callback) {
-        if (whitelist.indexOf(origin) !== -1) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    }
+    origin: 'https://www.codeattila.ch'
 }));
 
 // Mongoose Configuration
