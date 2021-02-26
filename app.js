@@ -45,7 +45,7 @@ app.use(bodyParser.urlencoded({
 app.use(helmet());
 // Cors
 var whitelist = process.env.DOMAIN;
-app.use(cors({
+var corsOptions = {
     credentials: true,
     origin: function(origin, callback) {
         if (whitelist.indexOf(origin) !== -1) {
@@ -54,7 +54,19 @@ app.use(cors({
             callback(new Error('Not allowed by CORS'));
         }
     }
-}));
+};
+// app.use(cors({
+//     credentials: true,
+//     origin: function (origin, callback) {
+//         if (whitelist.indexOf(origin) !== -1) {
+//             callback(null, true);
+//         } else {
+//             callback(new Error('Not allowed by CORS'));
+//         }
+//     }
+// }));
+
+app.use(cors(corsOptions));
 
 // Mongoose Configuration
 mongoose.set('useUnifiedTopology', true);
