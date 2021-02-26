@@ -47,7 +47,6 @@ app.use(helmet());
 // Cors
 app.use(cors({
     credentials: true,
-    origin: true
 }));
 
 // Mongoose Configuration
