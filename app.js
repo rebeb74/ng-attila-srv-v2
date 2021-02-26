@@ -24,7 +24,6 @@ const app = express();
 const http = require('http');
 const server = http.createServer(app);
 
-const whitelist = ['https://www.codeattila.ch', 'https://www.v1.codeattila.ch', 'https://www.v2.codeattila.ch', 'http://localhost:4200', 'http://192.168.1.117:4200'];
 const socketIO = require('socket.io');
 const io = socketIO(server, {
     cors: {
@@ -44,24 +43,11 @@ app.use(bodyParser.urlencoded({
 
 // helmet
 app.use(helmet());
-
 // Cors
-var corsOptions = {
+app.use(cors({
     credentials: true,
     origin: 'https://www.codeattila.ch'
-};
-// var corsOptions = {
-//     credentials: true,
-//     origin: function(origin, callback) {
-//         if (whitelist.indexOf(origin) !== -1) {
-//             callback(null, true);
-//         } else {
-//             callback(new Error('Not allowed by CORS'));
-//         }
-//     }
-// };
-
-app.use(cors(corsOptions));
+}));
 
 // Mongoose Configuration
 mongoose.set('useUnifiedTopology', true);
