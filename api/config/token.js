@@ -9,10 +9,10 @@
  */
 module.exports = (env) => ({
   accessToken: {
-    secret: env.ACCESS_TOKEN_SECRET,
-    expiresIn: env.ACCESS_TOKEN_EXPIRES_IN
+    secret: env.ACCESS_TOKEN_SECRET || process.env.ACCESS_TOKEN_SECRET,
+    expiresIn: env.ACCESS_TOKEN_EXPIRES_IN || process.env.ACCESS_TOKEN_EXPIRES_IN
   },
   refreshToken: {
-    expiresIn: env.REFRESH_TOKEN_EXPIRES_IN
+    expiresIn: env.ACCESS_TOKEN_EXPIRES_IN || process.env.ACCESS_TOKEN_EXPIRES_IN
   }
 });
