@@ -13,6 +13,6 @@ module.exports = (env) => ({
     expiresIn: env.ACCESS_TOKEN_EXPIRES_IN || process.env.ACCESS_TOKEN_EXPIRES_IN
   },
   refreshToken: {
-    expiresIn: env.REFRESH_TOKEN_EXPIRES_IN || process.env.REFRESH_TOKEN_EXPIRES_IN
+    expiresIn: env.ACCESS_TOKEN_EXPIRES_IN || process.env.ACCESS_TOKEN_EXPIRES_IN
   }
 });
