@@ -29,7 +29,7 @@ async function generateToken(user) {
     const newRefreshToken = await new RefreshToken({
         userId: user.id,
         token: refreshToken,
-        expiresAt: new Date(Date.now() + config.refreshToken.expiresIn)
+        expiresAt: new Date(Date.now() + config.refreshToken.expiresIn).toISOString()
     });
     newRefreshToken.save();
 
