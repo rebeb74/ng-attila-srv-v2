@@ -4,8 +4,10 @@ const token = require('./token');
 const server = require('./server');
 
 let env = dotenv.config({});
-if (env.error) throw env.error;
-env = dotenvParseVariables(env.parsed);
+// if (env.error) throw env.error;
+if (!env.error) {
+  env = dotenvParseVariables(env.parsed);
+}
 
 /**
  * Global configuration.
