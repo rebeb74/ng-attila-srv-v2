@@ -28,7 +28,7 @@ const server = http.createServer(app);
 const socketIO = require('socket.io');
 const io = socketIO(server, {
     cors: {
-        origin: whitelist,
+        origin: true,
         methods: ['GET', 'POST']
     },
 });
