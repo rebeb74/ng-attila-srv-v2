@@ -47,7 +47,7 @@ app.use(helmet());
 // Cors
 app.use(cors({
     credentials: true,
-    origin: 'https://codeattila.ch'
+    origin: true
 }));
 
 // Mongoose Configuration
