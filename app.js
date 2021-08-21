@@ -28,7 +28,7 @@ const server = http.createServer(app);
 const socketIO = require('socket.io');
 const io = socketIO(server, {
     cors: {
-        origin: true,
+        origin: whitelist,
         methods: ['GET', 'POST']
     },
 });
@@ -46,8 +46,8 @@ app.use(bodyParser.urlencoded({
 app.use(helmet());
 // Cors
 app.use(cors({
-    credentials: whitelist,
-    origin: true
+    credentials: true,
+    origin: whitelist
 }));
 
 // Mongoose Configuration
