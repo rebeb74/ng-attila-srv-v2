@@ -26,10 +26,12 @@ async function generateToken(user) {
     );
 
     const refreshToken = crypto.randomBytes(128).toString('base64');
+    const expiresAt =  new Date(Date.now() + config.refreshToken.expiresIn);
+    console.log('expiresAt', expiresAt);
     const newRefreshToken = await new RefreshToken({
         userId: user.id,
         token: refreshToken,
-        expiresAt: new Date(Date.now() + config.refreshToken.expiresIn).toISOString()
+        expiresAt: expiresAt
     });
     newRefreshToken.save();
 
