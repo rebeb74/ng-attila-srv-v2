@@ -19,7 +19,7 @@ const {
 const helmet = require('helmet');
 require('dotenv').config();
 
-var whitelist = ['https://www.codeattila.ch', 'https://www.v1.codeattila.ch', 'https://www.v2.codeattila.ch', 'http://localhost:4200', 'http://192.168.1.117:4200'];
+var whitelist = ['https://codeattila.ch', 'https://www.codeattila.ch', 'https://www.v1.codeattila.ch', 'https://www.v2.codeattila.ch', 'http://localhost:4200', 'http://192.168.1.117:4200'];
 // Instantiate server
 const app = express();
 const http = require('http');
@@ -46,8 +46,8 @@ app.use(bodyParser.urlencoded({
 app.use(helmet());
 // Cors
 app.use(cors({
-    credentials: whitelist,
-    origin: true
+    credentials: true,
+    origin: whitelist
 }));
 
 // Mongoose Configuration
