@@ -12,6 +12,6 @@ env = dotenvParseVariables(env.parsed);
  * @module config
  */
 module.exports = {
-  token: token(env || process.env),
-  server: server(env || process.env),
+  token: token(process.env || env),
+  server: server(process.env || env),
 };
