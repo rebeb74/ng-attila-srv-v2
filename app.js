@@ -45,10 +45,7 @@ app.use(bodyParser.urlencoded({
 // helmet
 app.use(helmet());
 // Cors
-app.use(cors({
-    credentials: true,
-    origin: true
-}));
+app.use(cors());
 
 // Mongoose Configuration
 mongoose.set('useUnifiedTopology', true);
