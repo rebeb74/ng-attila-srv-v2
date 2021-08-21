@@ -7,6 +7,8 @@ let env = dotenv.config({});
 // if (env.error) throw env.error;
 if (!env.error) {
   env = dotenvParseVariables(env.parsed);
+} else {
+  env = null;
 }
 
 /**
