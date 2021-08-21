@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+var moment = require('moment');
 const crypto = require('crypto');
 const {
     BadCredentialsError,
@@ -26,7 +27,7 @@ async function generateToken(user) {
     );
 
     const refreshToken = crypto.randomBytes(128).toString('base64');
-    const expiresAt =  new Date(Date.now() + config.refreshToken.expiresIn);
+    const expiresAt =  moment(new Date(Date.now() + config.refreshToken.expiresIn)).format('YYYY-MM-DD[T00:00:00.000Z]');
     console.log('expiresAt', expiresAt);
     const newRefreshToken = await new RefreshToken({
         userId: user.id,
