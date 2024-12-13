@@ -5,21 +5,20 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const {
-    server: config
-} = require('./api/config');
-const {
-    host,
-    port,
-    db
-} = config;
-const {
-    errorHandler
-} = require('./api/middleware');
+const { server: config } = require('./api/config');
+const { host, port, db } = config;
+const { errorHandler } = require('./api/middleware');
 const helmet = require('helmet');
 require('dotenv').config();
 
-var whitelist = ['https://codeattila.ch', 'https://www.codeattila.ch', 'https://www.v1.codeattila.ch', 'https://www.v2.codeattila.ch', 'http://localhost:4200', 'http://192.168.1.117:4200'];
+var whitelist = [
+  'https://codeattila.ch',
+  'https://www.codeattila.ch',
+  'https://www.v1.codeattila.ch',
+  'https://www.v2.codeattila.ch',
+  'http://localhost:4200',
+  'http://192.168.1.117:4200',
+];
 // Instantiate server
 const app = express();
 const http = require('http');
@@ -27,10 +26,10 @@ const server = http.createServer(app);
 
 const socketIO = require('socket.io');
 const io = socketIO(server, {
-    cors: {
-        origin: whitelist,
-        methods: ['GET', 'POST']
-    },
+  cors: {
+    origin: whitelist,
+    methods: ['GET', 'POST'],
+  },
 });
 
 // Init Mongoose
@@ -38,17 +37,21 @@ const connection = mongoose.connection;
 
 // Body Parser configuration
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
-    extended: false
-}));
+app.use(
+  bodyParser.urlencoded({
+    extended: false,
+  })
+);
 
 // helmet
 app.use(helmet());
 // Cors
-app.use(cors({
+app.use(
+  cors({
     credentials: true,
-    origin: whitelist
-}));
+    origin: whitelist,
+  })
+);
 
 // Mongoose Configuration
 mongoose.set('useUnifiedTopology', true);
@@ -56,93 +59,109 @@ mongoose.set('useFindAndModify', false);
 mongoose.set('useCreateIndex', true);
 mongoose.set('useNewUrlParser', true);
 mongoose.connect(db, {
-    useNewUrlParser: true
+  useNewUrlParser: true,
 });
 
 // Socket.io configuration
 io.of('/notification').on('connection', (socket) => {
-    console.log(`[Notification] - New client connected : SocketID ${socket.id}, userId : ${socket.handshake.query.userId}`);
-    Socket.findOneAndDelete({
+  console.log(
+    `[Notification] - New client connected : SocketID ${socket.id}, userId : ${socket.handshake.query.userId}`
+  );
+  Socket.findOneAndDelete({
+    user: socket.handshake.query.userId,
+    namespace: socket.nsp.name,
+  })
+    .exec()
+    .then(() => {
+      const newSocketUser = new Socket({
+        _id: socket.id,
         user: socket.handshake.query.userId,
-        namespace: socket.nsp.name
-    }).exec().then(
-        () => {
-            const newSocketUser = new Socket({
-                _id: socket.id,
-                user: socket.handshake.query.userId,
-                namespace: socket.nsp.name,
-                createdOn: socket.time
-            });
-            newSocketUser.save();
-            socket.on('disconnect', () => {
-                console.log(`[Notification] - New client disconnected : SocketID ${socket.id}, userId : ${socket.handshake.query.userId}`);
-                Socket.findByIdAndDelete(socket.id).exec();
-            });
-        }
-    );
+        namespace: socket.nsp.name,
+        createdOn: socket.time,
+      });
+      newSocketUser.save();
+      socket.on('disconnect', () => {
+        console.log(
+          `[Notification] - New client disconnected : SocketID ${socket.id}, userId : ${socket.handshake.query.userId}`
+        );
+        Socket.findByIdAndDelete(socket.id).exec();
+      });
+    });
 });
 io.of('/user').on('connection', (socket) => {
-    console.log(`[User] - New client connected : SocketID ${socket.id}, userId : ${socket.handshake.query.userId}`);
-    Socket.findOneAndDelete({
+  console.log(
+    `[User] - New client connected : SocketID ${socket.id}, userId : ${socket.handshake.query.userId}`
+  );
+  Socket.findOneAndDelete({
+    user: socket.handshake.query.userId,
+    namespace: socket.nsp.name,
+  })
+    .exec()
+    .then(() => {
+      const newSocketUser = new Socket({
+        _id: socket.id,
         user: socket.handshake.query.userId,
-        namespace: socket.nsp.name
-    }).exec().then(
-        () => {
-            const newSocketUser = new Socket({
-                _id: socket.id,
-                user: socket.handshake.query.userId,
-                namespace: socket.nsp.name,
-                createdOn: socket.time
-            });
-            newSocketUser.save();
-            socket.on('disconnect', () => {
-                console.log(`[User] - New client disconnected : SocketID ${socket.id}, userId : ${socket.handshake.query.userId}`);
-                Socket.findByIdAndDelete(socket.id).exec();
-            });
-        }
-    );
+        namespace: socket.nsp.name,
+        createdOn: socket.time,
+      });
+      newSocketUser.save();
+      socket.on('disconnect', () => {
+        console.log(
+          `[User] - New client disconnected : SocketID ${socket.id}, userId : ${socket.handshake.query.userId}`
+        );
+        Socket.findByIdAndDelete(socket.id).exec();
+      });
+    });
 });
 io.of('/event').on('connection', (socket) => {
-    console.log(`[Event] - New client connected : SocketID ${socket.id}, userId : ${socket.handshake.query.userId}`);
-    Socket.findOneAndDelete({
+  console.log(
+    `[Event] - New client connected : SocketID ${socket.id}, userId : ${socket.handshake.query.userId}`
+  );
+  Socket.findOneAndDelete({
+    user: socket.handshake.query.userId,
+    namespace: socket.nsp.name,
+  })
+    .exec()
+    .then(() => {
+      const newSocketUser = new Socket({
+        _id: socket.id,
         user: socket.handshake.query.userId,
-        namespace: socket.nsp.name
-    }).exec().then(
-        () => {
-            const newSocketUser = new Socket({
-                _id: socket.id,
-                user: socket.handshake.query.userId,
-                namespace: socket.nsp.name,
-                createdOn: socket.time
-            });
-            newSocketUser.save();
-            socket.on('disconnect', () => {
-                console.log(`[Event] - New client disconnected : SocketID ${socket.id}, userId : ${socket.handshake.query.userId}`);
-                Socket.findByIdAndDelete(socket.id).exec();
-            });
-        }
-    );
+        namespace: socket.nsp.name,
+        createdOn: socket.time,
+      });
+      newSocketUser.save();
+      socket.on('disconnect', () => {
+        console.log(
+          `[Event] - New client disconnected : SocketID ${socket.id}, userId : ${socket.handshake.query.userId}`
+        );
+        Socket.findByIdAndDelete(socket.id).exec();
+      });
+    });
 });
 io.of('/checklist').on('connection', (socket) => {
-    console.log(`[Checklist] - New client connected : SocketID ${socket.id}, userId : ${socket.handshake.query.userId}`);
-    Socket.findOneAndDelete({
+  console.log(
+    `[Checklist] - New client connected : SocketID ${socket.id}, userId : ${socket.handshake.query.userId}`
+  );
+  Socket.findOneAndDelete({
+    user: socket.handshake.query.userId,
+    namespace: socket.nsp.name,
+  })
+    .exec()
+    .then(() => {
+      const newSocketUser = new Socket({
+        _id: socket.id,
         user: socket.handshake.query.userId,
-        namespace: socket.nsp.name
-    }).exec().then(
-        () => {
-            const newSocketUser = new Socket({
-                _id: socket.id,
-                user: socket.handshake.query.userId,
-                namespace: socket.nsp.name,
-                createdOn: socket.time
-            });
-            newSocketUser.save();
-            socket.on('disconnect', () => {
-                console.log(`[Checklist] - New client disconnected : SocketID ${socket.id}, userId : ${socket.handshake.query.userId}`);
-                Socket.findByIdAndDelete(socket.id).exec();
-            });
-        }
-    );
+        namespace: socket.nsp.name,
+        createdOn: socket.time,
+      });
+      newSocketUser.save();
+      socket.on('disconnect', () => {
+        console.log(
+          `[Checklist] - New client disconnected : SocketID ${socket.id}, userId : ${socket.handshake.query.userId}`
+        );
+        Socket.findByIdAndDelete(socket.id).exec();
+      });
+    });
 });
 
 // API Configuration
@@ -162,26 +181,25 @@ const api = require('./api/routes');
 app.use('/api', api);
 app.use(errorHandler);
 app.use((req, res) => {
-    const err = new Error('404 - Not Found !!!!!');
-    err.status = 404;
-    res.json({
-        msg: '404 - Not Found !!!!!',
-        err: err
-    });
+  const err = new Error('404 - Not Found !!!!!');
+  err.status = 404;
+  res.json({
+    msg: '404 - Not Found !!!!!',
+    err: err,
+  });
 });
 
 connection.on('error', (err) => {
-    console.error(`Connection to MongoDB error: ${err.message}`);
+  console.error(`Connection to MongoDB error: ${err.message}`);
 });
 
 const serverPort = process.env.PORT || port;
 
 // Launch server
 connection.once('open', () => {
-    console.log('Connected to MongoDB');
+  console.log('Connected to MongoDB');
 
-    server.listen(serverPort, () => {
-        console.log(`App is running ! Go to http://${host}:${port}`);
-    });
-
+  server.listen(serverPort, () => {
+    console.log(`App is running ! Go to http://${host}`);
+  });
 });
